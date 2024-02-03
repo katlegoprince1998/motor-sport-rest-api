@@ -1,5 +1,6 @@
 package com.codeworld.motorsportapp.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,6 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+
 public class Vehicle {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -27,5 +29,6 @@ public class Vehicle {
     private List<Integer> likes = new ArrayList<>();
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User user;
 }

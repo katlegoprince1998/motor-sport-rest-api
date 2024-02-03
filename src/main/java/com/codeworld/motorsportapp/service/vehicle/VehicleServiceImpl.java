@@ -4,12 +4,14 @@ import com.codeworld.motorsportapp.dto.UserDto;
 import com.codeworld.motorsportapp.dto.VehicleDto;
 import com.codeworld.motorsportapp.entity.User;
 import com.codeworld.motorsportapp.entity.Vehicle;
+import com.codeworld.motorsportapp.exceptions.UserNotFoundException;
 import com.codeworld.motorsportapp.exceptions.VehicleFieldsCannotBeEmptyException;
 import com.codeworld.motorsportapp.exceptions.VehicleNotFoundException;
 import com.codeworld.motorsportapp.repository.UserRepository;
 import com.codeworld.motorsportapp.repository.VehicleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -24,33 +26,45 @@ public class VehicleServiceImpl implements VehicleService{
     private final UserRepository userRepository;
 
     @Override
-    public VehicleDto createVehicle(VehicleDto vehicleDto, UserDto user) throws Exception {
-
-
-        String getImage =vehicleDto.getImage();
+    public VehicleDto createVehicle(
+            VehicleDto vehicleDto, UserDto user)
+            throws VehicleFieldsCannotBeEmptyException,
+            UserNotFoundException {
+        String getImage = vehicleDto.getImage();
         String getDescription = vehicleDto.getDescription();
         String getName = vehicleDto.getName();
 
-        if(!getDescription.isEmpty() && !getName.isEmpty() && !getImage.isEmpty()){
-            Vehicle vehicle = Vehicle.builder()
-                    .createdAt(LocalDate.now())
-                    .price(vehicleDto.getPrice())
-                    .image(getImage)
-                    .likes(vehicleDto.getLikes())
-                    .description(getDescription)
-                    .name(getName)
-                    .user(vehicleDto.getUser())
-                    .build();
-            BeanUtils.copyProperties(vehicle, vehicleDto);
-            repository.save(vehicle);
-            vehicleDto.setId(vehicle.getId());
-        }else{
-            throw new VehicleFieldsCannotBeEmptyException("Image, description and name cannot be empty");
+        if (!getDescription.isEmpty() && !getName.isEmpty() && !getImage.isEmpty()) {
+            Optional<User> existingUser = userRepository.findById(user.getId());
+            if (existingUser.isPresent()) {
+                Vehicle vehicle = Vehicle.builder()
+                        .createdAt(LocalDate.now())
+                        .price(vehicleDto.getPrice())
+                        .image(getImage)
+                        .likes(vehicleDto.getLikes())
+                        .description(getDescription)
+                        .name(getName)
+                        .user(existingUser.get())
+                        .build();
+
+                repository.save(vehicle);
+                vehicleDto.setId(vehicle.getId());
+                vehicleDto.setCreatedAt(LocalDate.now());
+
+                vehicleDto.setUser(existingUser.get());
+                return vehicleDto;
+            } else {
+
+                throw new UserNotFoundException("User not found");
+            }
+        } else {
+
+            throw new VehicleFieldsCannotBeEmptyException(
+                    "Vehicle fields cannot be empty"
+            );
         }
-
-        return vehicleDto;
-
     }
+
 
     @Override
     public VehicleDto findVehicleById(Integer id) throws VehicleNotFoundException {

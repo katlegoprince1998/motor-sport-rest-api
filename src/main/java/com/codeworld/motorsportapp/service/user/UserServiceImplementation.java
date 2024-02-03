@@ -42,10 +42,11 @@ public class UserServiceImplementation implements UserService{
 
     @Override
     public UserDto findUserById(Integer id) throws UserNotFoundException {
-        Optional<User> user = repository.findById(id);
+        Optional<User> optionalUser = repository.findById(id);
         UserDto userDto = new UserDto();
 
-        if(user.isPresent()){
+        if(optionalUser.isPresent()){
+            User user = optionalUser.get();
             BeanUtils.copyProperties(user, userDto);
         }else{
             throw new UserNotFoundException("User with this id was not found");
