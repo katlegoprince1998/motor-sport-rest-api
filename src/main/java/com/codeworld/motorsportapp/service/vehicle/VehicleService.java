@@ -3,9 +3,11 @@ package com.codeworld.motorsportapp.service.vehicle;
 import com.codeworld.motorsportapp.dto.UserDto;
 import com.codeworld.motorsportapp.dto.VehicleDto;
 import com.codeworld.motorsportapp.entity.User;
+import com.codeworld.motorsportapp.entity.Vehicle;
 import com.codeworld.motorsportapp.exceptions.UserNotFoundException;
 import com.codeworld.motorsportapp.exceptions.VehicleFieldsCannotBeEmptyException;
 import com.codeworld.motorsportapp.exceptions.VehicleNotFoundException;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -19,4 +21,6 @@ public interface VehicleService {
 
      List<VehicleDto> findAllVehicles();
      VehicleDto likedVehicles(Integer id, User user) throws VehicleNotFoundException;
+
+    Page<Vehicle> pagination(int offset, int pageSize, String field);
 }

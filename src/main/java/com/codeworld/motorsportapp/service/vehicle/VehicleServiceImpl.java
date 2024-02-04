@@ -12,6 +12,9 @@ import com.codeworld.motorsportapp.repository.VehicleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -150,5 +153,18 @@ public class VehicleServiceImpl implements VehicleService{
             BeanUtils.copyProperties(vehicle.getLikes(), vehicleDto.getLikes());
         }
         return vehicleDto;
+    }
+
+    @Override
+    public Page<Vehicle> pagination(
+            int offset, int pageSize, String field) {
+        if("defaultValue".equals(field)){
+           return repository.findAll(PageRequest.of(offset, pageSize));
+        }else {
+            return repository.findAll(
+                    PageRequest.of(offset, pageSize)
+                            .withSort(Sort.by(field)));
+        }
+
     }
 }

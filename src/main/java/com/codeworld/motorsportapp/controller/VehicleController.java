@@ -3,12 +3,14 @@ package com.codeworld.motorsportapp.controller;
 import com.codeworld.motorsportapp.dto.UserDto;
 import com.codeworld.motorsportapp.dto.VehicleDto;
 
+import com.codeworld.motorsportapp.entity.Vehicle;
 import com.codeworld.motorsportapp.exceptions.UserNotFoundException;
 import com.codeworld.motorsportapp.exceptions.VehicleDtoError;
 import com.codeworld.motorsportapp.exceptions.VehicleNotFoundException;
 import com.codeworld.motorsportapp.service.user.UserService;
 import com.codeworld.motorsportapp.service.vehicle.VehicleService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -85,6 +87,22 @@ public class VehicleController {
                     (response,
                             HttpStatus.INTERNAL_SERVER_ERROR);
 
+        }
+    }
+
+    @GetMapping("/pagination/{offset}/{pageSize}")
+    public ResponseEntity<Page<Vehicle>> paginaton(
+            @PathVariable int offset,
+            @PathVariable int pageSize,
+            @RequestParam(required = false, defaultValue = "defaultValue") String field
+    ){
+        Page<Vehicle> vehiclePage =
+                service.pagination(offset, pageSize, field);
+
+        if (vehiclePage.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }else {
+            return ResponseEntity.ok(vehiclePage);
         }
     }
 }
