@@ -2,7 +2,6 @@ package com.codeworld.motorsportapp.service.vehicle;
 
 import com.codeworld.motorsportapp.dto.UserDto;
 import com.codeworld.motorsportapp.dto.VehicleDto;
-import com.codeworld.motorsportapp.entity.User;
 import com.codeworld.motorsportapp.entity.Vehicle;
 import com.codeworld.motorsportapp.exceptions.UserNotFoundException;
 import com.codeworld.motorsportapp.exceptions.VehicleFieldsCannotBeEmptyException;
@@ -20,7 +19,7 @@ public interface VehicleService {
      VehicleDto updateVehicle(VehicleDto vehicleDto, Integer id) throws VehicleNotFoundException;
 
      List<VehicleDto> findAllVehicles();
-     VehicleDto likedVehicles(Integer id, User user) throws VehicleNotFoundException;
+     VehicleDto likedVehicles(Integer id, UserDto user) throws VehicleNotFoundException;
 
     Page<Vehicle> pagination(int offset, int pageSize, String field);
 }

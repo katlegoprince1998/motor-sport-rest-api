@@ -21,7 +21,7 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/vehicle/api/v1/")
+@RequestMapping("/api/vehicle/v1/")
 public class VehicleController {
     private final VehicleService service;
     private final UserService userService;
@@ -103,6 +103,23 @@ public class VehicleController {
             return ResponseEntity.notFound().build();
         }else {
             return ResponseEntity.ok(vehiclePage);
+        }
+    }
+
+    @PutMapping("/like/vehicle/{id}/user/{userId}")
+    public ResponseEntity<Map<String,String>> likeUnlikeVehicle(
+            @PathVariable Integer id,
+            @PathVariable Integer userId
+    ) throws UserNotFoundException, VehicleNotFoundException {
+        UserDto user = userService.findUserById(userId);
+        Map<String, String> response = new HashMap<>();
+        try{
+            response.put("message", "Vehicle liked/unliked");
+            service.likedVehicles(id, user);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }catch (Exception e){
+            response.put("message", "Failed to like/unlike vehicle");
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

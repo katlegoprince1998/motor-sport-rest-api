@@ -142,14 +142,16 @@ public class VehicleServiceImpl implements VehicleService{
     }
 
     @Override
-    public VehicleDto likedVehicles(Integer id, User user) throws VehicleNotFoundException {
+    public VehicleDto likedVehicles(Integer id, UserDto user) throws VehicleNotFoundException {
         Vehicle vehicle = repository.findById(id).get();
         VehicleDto vehicleDto = new VehicleDto();
         if(vehicle.getLikes().contains(user.getId())){
             vehicle.getLikes().remove(user.getId());
+            repository.save(vehicle);
             BeanUtils.copyProperties(vehicle.getLikes(), vehicleDto.getLikes());
         }else{
             vehicle.getLikes().add(user.getId());
+            repository.save(vehicle);
             BeanUtils.copyProperties(vehicle.getLikes(), vehicleDto.getLikes());
         }
         return vehicleDto;
