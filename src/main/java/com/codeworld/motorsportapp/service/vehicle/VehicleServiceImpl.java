@@ -11,7 +11,7 @@ import com.codeworld.motorsportapp.repository.UserRepository;
 import com.codeworld.motorsportapp.repository.VehicleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
-import org.springframework.context.annotation.Bean;
+
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -69,15 +69,17 @@ public class VehicleServiceImpl implements VehicleService{
     @Override
     public VehicleDto findVehicleById(Integer id) throws VehicleNotFoundException {
         Optional<Vehicle> optionalVehicle = repository.findById(id);
-        VehicleDto vehicleDto = new VehicleDto();
-        if(optionalVehicle.isPresent()){
-            BeanUtils.copyProperties(optionalVehicle, vehicleDto);
-        }else {
+
+        if (optionalVehicle.isPresent()) {
+            VehicleDto vehicleDto = new VehicleDto();
+            BeanUtils.copyProperties(optionalVehicle.get(), vehicleDto);
+            vehicleDto.setUser(optionalVehicle.get().getUser());
+            return vehicleDto;
+        } else {
             throw new VehicleNotFoundException("Vehicle with this id was not found");
         }
-
-        return vehicleDto;
     }
+
 
     @Override
     public void deleteVehicle(Integer id) throws VehicleNotFoundException {
